@@ -22,12 +22,31 @@ makeBoard = () => {
   //   return [...Array(HEIGHT)].fill(null);
   // })
 };
+// function makeBoard() {
+//   // board = [...Array(WIDTH)].map(() => [...Array(HEIGHT)].map(() => null));
+//   board = [...Array(WIDTH)].map(function () {
+//     return [...Array(HEIGHT)].map(function () {
+//       return null;
+//     })
+//   })
+// }
+// function makeBoard() {
+//   // board = new Array(WIDTH).fill(null).map(() => new Array(HEIGHT).fill(null)); //https://stackoverflow.com/questions/16512182/how-to-create-empty-2d-array-in-javascript/38213067
+//   board = new Array(WIDTH).fill(null).map(function () {
+//     return new Array(HEIGHT).fill(null);
+//   })
+// }
+// function makeBoard() {
+//   for (let y = 0; y < HEIGHT; y++) {
+//     board.push(Array.from({ length: WIDTH }));
+//   }
+// }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
 makeHtmlBoard = () => {
   const htmlBoard = document.getElementById('board');
 
-  // adds clickable area for dropping player pieces to column
+  // CLICKABLE AREA for dropping player pieces to column
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
   top.addEventListener('click', handleClick);
@@ -55,7 +74,6 @@ makeHtmlBoard = () => {
 
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 findSpotForCol = x => {
-  // TODO: write the real version of this, rather than always returning 0
   for (let y = HEIGHT - 1; y >= 0; y--) {
     if (board[y][x] == null) {
       return y;
@@ -66,21 +84,19 @@ findSpotForCol = x => {
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 placeInTable = (y, x) => {
-  // TODO: make a div and insert into correct table cell
+  // make a div and insert into correct table cell
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${currPlayer}`);
-  // piece.style.top = -50 * (y + 2);
+  piece.style.top = -50 * (y + 2);
 
-  //set player colors from color pallete
+  // SET PLAYER COLORS FROM COLOR SELECTION FORM
   if (currPlayer === 1) {
     let p1Color = document.getElementById('p1-color');
-    let color1 = p1Color.value;
-    piece.style.backgroundColor = color1;
+    piece.style.backgroundColor = p1Color.value;
   } else {
     let p2Color = document.getElementById('p2-color');
-    let color2 = p2Color.value;
-    piece.style.backgroundColor = color2;
+    piece.style.backgroundColor = p2Color.value;
   }
 
   const spot = document.getElementById(`${y}-${x}`);
@@ -111,18 +127,22 @@ handleClick = e => {
   board[y][x] = currPlayer; // match cell to player
   placeInTable(y, x);
 
-  // check for win
+  // CHECK FOR WIN
   if (checkForWin()) {
     endGame(`Player ${currPlayer} is the winner! 🎉`);
+    document.getElementById('restartGame').innerText = 'Play Again!';
+    document.getElementById('restartGame').style.fontSize = '50px';
   }
 
-  // check for tie
+  // CHECK FOR TIE
   //if no cells are null, call endGame
   if (board[0].every(val => val !== null)) {
-    return endGame(`It's a Tie! 🙀`);
+    endGame(`It's a Tie! 🙀`);
+    document.getElementById('restartGame').innerText = 'Play Again!';
+    document.getElementById('restartGame').style.fontSize = '50px';
   }
 
-  // switch players
+  // SWITCH PLAYERS
   currPlayer = currPlayer === 1 ? 2 : 1;
 };
 
@@ -179,8 +199,32 @@ checkForWin = () => {
 };
 
 /*EXTRA*/
-//SHOW PLAYER COLORS
-function viewPlayers() {
+// window.addEventListener('load', startup, false);
+
+// function startup() {
+//   let colorWell = document.querySelector('#p1-color');
+//   colorWell.value = '#fb6376';
+//   colorWell.addEventListener('input', updateFirst, false);
+//   colorWell.addEventListener('change', updateAll, false);
+//   colorWell.select();
+// }
+
+// function updateFirst(e) {
+//   let p1Color = document.querySelector('.piece.p1');
+
+//   if (p1Color) {
+//     p1Color.style.backgroundColor = e.target.value;
+//   }
+// }
+
+// function updateAll(e) {
+//   document.querySelectorAll('.piece.p1').forEach(function (p1) {
+//     p1.style.backgroundColor = e.target.value;
+//   });
+// }
+
+//SHOW PLAYER NAMES AND COLORS
+viewPlayers = () => {
   const section = document.querySelector('section');
   const p1 = document.createElement('p');
   const p2 = document.createElement('p');
@@ -194,7 +238,7 @@ function viewPlayers() {
   const p2Color = document.getElementById('p2-color');
   const color2 = p2Color.value;
   p2.style.color = color2;
-}
+};
 
 //START GAME ON BUTTON CLICK
 const form = document.getElementById('pick-color');
@@ -223,13 +267,11 @@ function restartGame() {
 }
 
 //ANIMATE TEXT
-function randomRGB() {
+randomRGB = () => {
   const r = Math.floor(Math.random() * 256); //put 256 to include 255 bc this will give a num between 0, 254.999~
   const g = Math.floor(Math.random() * 256);
   const b = Math.floor(Math.random() * 256);
   return `rgb(${r}, ${g}, ${b})`;
-}
+};
 // change h1 color onmouseover (index.html ln:12)
-function changeColor(obj) {
-  obj.style.color = randomRGB();
-}
+changeColor = obj => (obj.style.color = randomRGB());

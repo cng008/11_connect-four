@@ -34,18 +34,10 @@ p {
 /* pieces are div within game table cells: draw as colored circles */
 .piece {
   border-radius: 50%; /* TODO: make into circles */
-  width: 0.7em;
-  height: 0.7em;
+  width: 10px;
+  height: 10px;
 }
 
-/* TODO: make pieces red/blue,  depending on player 1/2 piece */
-.piece.p1 {
-  /* background-color: red; */
-}
-
-.piece.p2 {
-  background-color: blue;
-}
 /* column-top is table row of clickable areas for each column */
 #column-top td {
   background: lightgray;
@@ -67,6 +59,7 @@ p {
 #restartGame {
   font-size: 20px;
   color: rgb(59, 47, 167);
+  background: rgb(233, 233, 233);
   padding: 0.3em;
   margin: 3em;
   border: 2px solid rgb(59, 47, 167);
@@ -83,5 +76,6 @@ p {
 
 #restartGame {
   display: none;
+  margin: auto;
   transform: scale(0.7);
 }
