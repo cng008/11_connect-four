@@ -1,28 +1,73 @@
-/* game board table */
+* {
+  font-family: 'Bakbak One', sans-serif;
+  text-align: center;
+  margin: auto;
+}
 
+div {
+  padding: 1.5em;
+}
+
+/* game board table */
 #board td {
   width: 50px;
   height: 50px;
-  border: solid 1px #666;
+  padding: 5px;
+  /* border-radius: 30px; */
+  border: solid 2px rgb(59, 47, 167);
 }
 
 /* pieces are div within game table cells: draw as colored circles */
-
 .piece {
-  /* TODO: make into circles */
-  margin: 5px;
-  width: 80%;
-  height: 80%;
+  border-radius: 50px; /* TODO: make into circles */
+  width: 20%;
+  height: 20%;
 }
 
 /* TODO: make pieces red/blue,  depending on player 1/2 piece */
+.piece.p1 {
+  background: red;
+}
 
+.piece.p2 {
+  background: blue;
+}
 /* column-top is table row of clickable areas for each column */
-
 #column-top td {
+  background: lightgray;
   border: dashed 1px lightgray;
+  border-radius: 50px;
+  opacity: 50%;
+  transform: scale(1); /* Animation */
+  transition: transform 200ms;
 }
 
 #column-top td:hover {
-  background-color: gold;
+  background: gold; /* make bg red/blue,  depending on player 1/2 turn */
+  opacity: 100%;
+  transform: scale(0.9) translate(0, 10px);
+}
+
+/* start and restart button styling */
+#startGame,
+#restartGame {
+  font-size: 20px;
+  color: rgb(59, 47, 167);
+  padding: 0.3em;
+  margin: auto;
+  border: 2px solid rgb(59, 47, 167);
+  border-radius: 16px;
+}
+
+#startGame:hover,
+#restartGame:hover {
+  background: rgb(59, 47, 167);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+}
+
+#restartGame {
+  display: none;
+  transform: scale(0.7);
 }
