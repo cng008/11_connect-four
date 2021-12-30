@@ -8,8 +8,33 @@
   <link href="connect4.css" rel="stylesheet">
 </head>
 <body>
-  <h1><span>CONNECT 4</span></h1>
-  <button id="startGame">Start Game</button>
+  <div>  
+    <h1 onmouseover="changeColor(this)">CONNECT 4</h1>
+    <section></section>
+    <form action="#" id="pick-color">
+      <div class="player">
+        <div><label for="p1-color">Player 1</label></div>
+        <input type="color" id="p1-color" value="#fb6376" onmouseover="changeColor(this)" list="presetColors1">
+  <datalist id="presetColors1">
+    <option>#5d2a42</option>/>
+    <option>#fb6376</option>
+    <option>#fcb1a6</option>
+  </datalist>
+      </div>
+      <div class="player">
+        <div><label for="p2-color">Player 2</label></div>
+        <input type="color" id="p2-color" value="#007ea7" onmouseover="changeColor(this)" list="presetColors2">
+  <datalist id="presetColors2">
+    <option>#003249</option>/>
+    <option>#007ea7</option>
+    <option>#80ced7</option>
+  </datalist>
+      </div>
+    <br>
+    <input type="submit" id="startGame" value="Start Game" />
+  </form>
+  </div>
+
   <div id="game">
     <table id="board"></table>
   </div>

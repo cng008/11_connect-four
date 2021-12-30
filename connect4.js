@@ -70,7 +70,18 @@ placeInTable = (y, x) => {
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${currPlayer}`);
-  piece.style.top = -50 * (y + 2);
+  // piece.style.top = -50 * (y + 2);
+
+  //set player colors from color pallete
+  if (currPlayer === 1) {
+    let p1Color = document.getElementById('p1-color');
+    let color1 = p1Color.value;
+    piece.style.backgroundColor = color1;
+  } else {
+    let p2Color = document.getElementById('p2-color');
+    let color2 = p2Color.value;
+    piece.style.backgroundColor = color2;
+  }
 
   const spot = document.getElementById(`${y}-${x}`);
   spot.append(piece);
@@ -168,19 +179,33 @@ checkForWin = () => {
 };
 
 /*EXTRA*/
-//START GAME ON BUTTON CLICK
-// const startBtn = document.getElementById('startGame');
-const startBtn = document.getElementById('startGame');
-// const p1ColorInput = document.querySelector("input[name='p1-color']");
-// const p2ColorInput = document.querySelector("input[name='p2-color']");
-startBtn.addEventListener('click', startGame);
+//SHOW PLAYER COLORS
+function viewPlayers() {
+  const section = document.querySelector('section');
+  const p1 = document.createElement('p');
+  const p2 = document.createElement('p');
+  section.append(p1, p2);
+  p1.textContent = 'Player 1';
+  p2.textContent = 'Player 2';
 
-function startGame() {
+  const p1Color = document.getElementById('p1-color');
+  const color1 = p1Color.value;
+  p1.style.color = color1;
+  const p2Color = document.getElementById('p2-color');
+  const color2 = p2Color.value;
+  p2.style.color = color2;
+}
+
+//START GAME ON BUTTON CLICK
+const form = document.getElementById('pick-color');
+form.addEventListener('submit', startGame);
+
+function startGame(e) {
+  e.preventDefault();
+  viewPlayers();
   makeBoard();
   makeHtmlBoard();
-  // p1ColorInput.value = p1;
-  // p2ColorInput.value = p2;
-  startBtn.style.display = 'none';
+  form.style.display = 'none';
   restartBtn.style.display = 'inline';
 }
 
@@ -195,4 +220,16 @@ function restartGame() {
   // makeBoard();
   // makeHtmlBoard();
   // restartBtn.removeEventListener('click', restartGame);
+}
+
+//ANIMATE TEXT
+function randomRGB() {
+  const r = Math.floor(Math.random() * 256); //put 256 to include 255 bc this will give a num between 0, 254.999~
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+// change h1 color onmouseover (index.html ln:12)
+function changeColor(obj) {
+  obj.style.color = randomRGB();
 }

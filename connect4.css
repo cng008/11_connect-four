@@ -2,10 +2,24 @@
   font-family: 'Bakbak One', sans-serif;
   text-align: center;
   margin: auto;
+  font-size: 20px;
 }
 
 div {
-  padding: 1.5em;
+  padding: 1em;
+}
+
+form > .player {
+  display: inline-block;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+p {
+  display: inline;
+  padding: 2em;
 }
 
 /* game board table */
@@ -19,24 +33,24 @@ div {
 
 /* pieces are div within game table cells: draw as colored circles */
 .piece {
-  border-radius: 50px; /* TODO: make into circles */
-  width: 20%;
-  height: 20%;
+  border-radius: 50%; /* TODO: make into circles */
+  width: 0.7em;
+  height: 0.7em;
 }
 
 /* TODO: make pieces red/blue,  depending on player 1/2 piece */
 .piece.p1 {
-  background: red;
+  /* background-color: red; */
 }
 
 .piece.p2 {
-  background: blue;
+  background-color: blue;
 }
 /* column-top is table row of clickable areas for each column */
 #column-top td {
   background: lightgray;
   border: dashed 1px lightgray;
-  border-radius: 50px;
+  border-radius: 50%;
   opacity: 50%;
   transform: scale(1); /* Animation */
   transition: transform 200ms;
@@ -54,7 +68,7 @@ div {
   font-size: 20px;
   color: rgb(59, 47, 167);
   padding: 0.3em;
-  margin: auto;
+  margin: 3em;
   border: 2px solid rgb(59, 47, 167);
   border-radius: 16px;
 }
