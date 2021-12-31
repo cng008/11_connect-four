@@ -22,25 +22,6 @@ makeBoard = () => {
   //   return [...Array(HEIGHT)].fill(null);
   // })
 };
-// function makeBoard() {
-//   // board = [...Array(WIDTH)].map(() => [...Array(HEIGHT)].map(() => null));
-//   board = [...Array(WIDTH)].map(function () {
-//     return [...Array(HEIGHT)].map(function () {
-//       return null;
-//     })
-//   })
-// }
-// function makeBoard() {
-//   // board = new Array(WIDTH).fill(null).map(() => new Array(HEIGHT).fill(null)); //https://stackoverflow.com/questions/16512182/how-to-create-empty-2d-array-in-javascript/38213067
-//   board = new Array(WIDTH).fill(null).map(function () {
-//     return new Array(HEIGHT).fill(null);
-//   })
-// }
-// function makeBoard() {
-//   for (let y = 0; y < HEIGHT; y++) {
-//     board.push(Array.from({ length: WIDTH }));
-//   }
-// }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
 makeHtmlBoard = () => {
@@ -88,7 +69,7 @@ placeInTable = (y, x) => {
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${currPlayer}`);
-  piece.style.top = -50 * (y + 2);
+  // piece.style.top = -50 * (y + 2);
 
   // SET PLAYER COLORS FROM COLOR SELECTION FORM
   if (currPlayer === 1) {
@@ -106,10 +87,21 @@ placeInTable = (y, x) => {
 /** endGame: announce game end */
 endGame = msg => {
   // pop up alert message
-  alert(msg);
+  setTimeout(() => {
+    alert(msg);
+  }, 400);
+
+  // changes Reset Game button to Play Again
+  document.getElementById('restartGame').innerText = 'Play Again!';
+  document.getElementById('restartGame').style.fontSize = '50px';
+
   // won't let anyone keep dropping .piece
   const top = document.getElementById('column-top');
   top.removeEventListener('click', handleClick);
+
+  // arrow changes to trophy for winner
+  document.getElementById('whose-turn').innerHTML = '🏆';
+  document.getElementById('whose-turn').style.color = p1Color.value;
 };
 
 /** handleClick: handle click of column top to play piece */
@@ -130,29 +122,24 @@ handleClick = e => {
   // CHECK FOR WIN
   if (checkForWin()) {
     endGame(`Player ${currPlayer} is the winner! 🎉`);
-    document.getElementById('restartGame').innerText = 'Play Again!';
-    document.getElementById('restartGame').style.fontSize = '50px';
   }
 
   // CHECK FOR TIE
-  //if no cells are null, call endGame
+  // if no cells are null, call endGame
+  // checks top row to see if any are not null
   if (board[0].every(val => val !== null)) {
     endGame(`It's a Tie! 🙀`);
-    document.getElementById('restartGame').innerText = 'Play Again!';
-    document.getElementById('restartGame').style.fontSize = '50px';
   }
 
   // SWITCH PLAYERS
   currPlayer = currPlayer === 1 ? 2 : 1;
+  switchPlayer();
 };
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 checkForWin = () => {
   function _win(cells) {
     // Check four cells to see if they're all color of current player
-    //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
-
     return cells.every(
       ([y, x]) =>
         y >= 0 &&
@@ -164,6 +151,7 @@ checkForWin = () => {
   }
 
   // calculates win possibilities
+  //  - cells: list of four (y, x) cells
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
       let horiz = [
@@ -191,6 +179,7 @@ checkForWin = () => {
         [y + 3, x - 3]
       ];
 
+      //  - returns true if all are legal coordinates & all match currPlayer
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
       }
@@ -199,45 +188,43 @@ checkForWin = () => {
 };
 
 /*EXTRA*/
-// window.addEventListener('load', startup, false);
-
-// function startup() {
-//   let colorWell = document.querySelector('#p1-color');
-//   colorWell.value = '#fb6376';
-//   colorWell.addEventListener('input', updateFirst, false);
-//   colorWell.addEventListener('change', updateAll, false);
-//   colorWell.select();
-// }
-
-// function updateFirst(e) {
-//   let p1Color = document.querySelector('.piece.p1');
-
-//   if (p1Color) {
-//     p1Color.style.backgroundColor = e.target.value;
-//   }
-// }
-
-// function updateAll(e) {
-//   document.querySelectorAll('.piece.p1').forEach(function (p1) {
-//     p1.style.backgroundColor = e.target.value;
-//   });
-// }
 
 //SHOW PLAYER NAMES AND COLORS
 viewPlayers = () => {
-  const section = document.querySelector('section');
+  // adds text
+  const players = document.getElementById('players');
   const p1 = document.createElement('p');
   const p2 = document.createElement('p');
-  section.append(p1, p2);
+  players.append(p1, p2);
   p1.textContent = 'Player 1';
   p2.textContent = 'Player 2';
 
+  // match player to color they picked
   const p1Color = document.getElementById('p1-color');
-  const color1 = p1Color.value;
-  p1.style.color = color1;
+  p1.style.color = p1Color.value;
   const p2Color = document.getElementById('p2-color');
-  const color2 = p2Color.value;
-  p2.style.color = color2;
+  p2.style.color = p2Color.value;
+
+  // add ^ arrow to indicate whose turn
+  const turn = document.getElementById('whose-turn');
+  const arrow = document.createElement('span');
+  turn.append(arrow);
+  arrow.innerText = '^';
+};
+
+// INDICATE WHOSE TURN IT IS ^
+switchPlayer = () => {
+  let arrow = document.getElementById('whose-turn');
+  const p1Color = document.getElementById('p1-color');
+  const p2Color = document.getElementById('p2-color');
+
+  if (currPlayer === 1) {
+    arrow.style.textAlign = 'left';
+    arrow.style.color = p1Color.value;
+  } else {
+    arrow.style.textAlign = 'right';
+    arrow.style.color = p2Color.value;
+  }
 };
 
 //START GAME ON BUTTON CLICK
