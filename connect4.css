@@ -4,8 +4,14 @@
   margin: auto;
   font-size: 20px;
 }
+
+html {
+  background: black;
+}
+
 div {
   padding: 1em;
+  color: white;
 }
 
 form > .player {
@@ -14,6 +20,7 @@ form > .player {
 
 h1 {
   font-size: 30px;
+  color: white;
 }
 
 p {

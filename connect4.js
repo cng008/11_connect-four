@@ -98,10 +98,6 @@ endGame = msg => {
   // won't let anyone keep dropping .piece
   const top = document.getElementById('column-top');
   top.removeEventListener('click', handleClick);
-
-  // arrow changes to trophy for winner
-  document.getElementById('whose-turn').innerHTML = '🏆';
-  document.getElementById('whose-turn').style.color = p1Color.value;
 };
 
 /** handleClick: handle click of column top to play piece */
@@ -122,6 +118,9 @@ handleClick = e => {
   // CHECK FOR WIN
   if (checkForWin()) {
     endGame(`Player ${currPlayer} is the winner! 🎉`);
+    // arrow changes to trophy for winner
+    document.getElementById('whose-turn').innerHTML = '🏆';
+    document.getElementById('whose-turn').style.color = p1Color.value;
   }
 
   // CHECK FOR TIE
@@ -129,6 +128,7 @@ handleClick = e => {
   // checks top row to see if any are not null
   if (board[0].every(val => val !== null)) {
     endGame(`It's a Tie! 🙀`);
+    document.getElementById('whose-turn').innerHTML = ' '; // no one gets a trophy
   }
 
   // SWITCH PLAYERS
