@@ -16,11 +16,12 @@ let board = []; // array of rows, each row is array of cells  (board[y][x])
  */
 
 makeBoard = () => {
-  // TODO: set "board" to empty HEIGHT x WIDTH matrix array
+  // set "board" to empty HEIGHT x WIDTH matrix array
   board = [...Array(WIDTH)].fill(null).map(() => [...Array(HEIGHT)].fill(null));
   // board = [...Array(WIDTH)].fill(null).map(function () {
   //   return [...Array(HEIGHT)].fill(null);
   // })
+  //https://stackoverflow.com/questions/16512182/how-to-create-empty-2d-array-in-javascript/38213067
 };
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -74,7 +75,7 @@ placeInTable = (y, x) => {
   // SET PLAYER COLORS FROM COLOR SELECTION FORM
   if (currPlayer === 1) {
     let p1Color = document.getElementById('p1-color');
-    piece.style.backgroundColor = p1Color.value;
+    piece.style.backgroundColor = p1Color.value; //sets selected color as .piece bg color
   } else {
     let p2Color = document.getElementById('p2-color');
     piece.style.backgroundColor = p2Color.value;
@@ -214,7 +215,7 @@ viewPlayers = () => {
 
 // INDICATE WHOSE TURN IT IS ^
 switchPlayer = () => {
-  let arrow = document.getElementById('whose-turn');
+  const arrow = document.getElementById('whose-turn');
   const p1Color = document.getElementById('p1-color');
   const p2Color = document.getElementById('p2-color');
 
