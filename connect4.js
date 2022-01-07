@@ -4,191 +4,212 @@
  * column until a player gets four-in-a-row (horiz, vert, or diag) or until
  * board fills (tie)
  */
-
-const WIDTH = 7;
-const HEIGHT = 6;
-
-let currPlayer = 1; // active player: 1 or 2
-let board = []; // array of rows, each row is array of cells  (board[y][x])
-
-/** makeBoard: create in-JS board structure:
- *    board = array of rows, each row is array of cells  (board[y][x])
- */
-
-makeBoard = () => {
-  // set "board" to empty HEIGHT x WIDTH matrix array
-  board = [...Array(WIDTH)].fill(null).map(() => [...Array(HEIGHT)].fill(null));
-  // board = [...Array(WIDTH)].fill(null).map(function () {
-  //   return [...Array(HEIGHT)].fill(null);
-  // })
-  //https://stackoverflow.com/questions/16512182/how-to-create-empty-2d-array-in-javascript/38213067
-};
-
-/** makeHtmlBoard: make HTML table and row of column tops. */
-makeHtmlBoard = () => {
-  const htmlBoard = document.getElementById('board');
-
-  // CLICKABLE AREA for dropping player pieces to column
-  const top = document.createElement('tr');
-  top.setAttribute('id', 'column-top');
-  top.addEventListener('click', handleClick);
-
-  for (let x = 0; x < WIDTH; x++) {
-    const headCell = document.createElement('td');
-    headCell.setAttribute('id', x);
-    top.append(headCell);
+//prettier-ignore
+class Game {
+  constructor(p1, p2) {
+    this.players = [p1, p2];
+    this.HEIGHT = 6;
+    this.WIDTH = 7;
+    this.currPlayer = p1;
+    this.makeBoard();
+    this.makeHtmlBoard();
   }
-  htmlBoard.append(top);
 
-  // creates main board based on set WIDTH x HEIGHT
-  // creates a tr until the loop has iterated Y-times
-  for (let y = 0; y < HEIGHT; y++) {
-    const row = document.createElement('tr');
-    // creates a td and appends it to the tr above, loops until itiration is equal to WIDTH
-    for (let x = 0; x < WIDTH; x++) {
-      const cell = document.createElement('td');
-      cell.setAttribute('id', `${y}-${x}`);
-      row.append(cell);
+  /** makeBoard: create in-JS board structure:
+   *  board = array of rows, each row is array of cells  (board[y][x]) */
+  makeBoard() {
+    // this.board = []; // not needed
+    // set "board" to empty HEIGHT x WIDTH matrix array
+    // array of rows, each row is array of cells  (board[y][x])
+    this.board = [...Array(this.WIDTH)].fill(null).map(() => [...Array(this.HEIGHT)].fill(null));
+  }
+
+  /** makeHtmlBoard: make HTML table and row of column tops. */
+  makeHtmlBoard() {
+    const htmlBoard = document.getElementById('board');
+    // board.innerHTML = ''; //to prevent multiple boards if no restart btn
+
+    // CLICKABLE AREA for dropping player pieces to column
+    const top = document.createElement('tr');
+    top.setAttribute('id', 'column-top');
+
+    // store a reference to the handleClick bound function
+    // so that we can remove the event listener correctly later
+    this.handleDropPiece = this.handleClick.bind(this);
+    top.addEventListener('click', this.handleDropPiece);
+
+    for (let x = 0; x < this.WIDTH; x++) {
+      const headCell = document.createElement('td');
+      headCell.setAttribute('id', x);
+      top.append(headCell);
     }
-    htmlBoard.append(row);
-  }
-};
+    htmlBoard.append(top);
 
-/** findSpotForCol: given column x, return top empty y (null if filled) */
-findSpotForCol = x => {
-  for (let y = HEIGHT - 1; y >= 0; y--) {
-    if (board[y][x] == null) {
-      return y;
+    // creates main board based on set WIDTH x HEIGHT
+    // creates a tr until the loop has iterated Y-times
+    for (let y = 0; y < this.HEIGHT; y++) {
+      const row = document.createElement('tr');
+      // creates a td and appends it to the tr above, loops until itiration is equal to WIDTH
+      for (let x = 0; x < this.WIDTH; x++) {
+        const cell = document.createElement('td');
+        cell.setAttribute('id', `${y}-${x}`);
+        row.append(cell);
+      }
+      htmlBoard.append(row);
     }
   }
-  return null;
-};
 
-/** placeInTable: update DOM to place piece into HTML table of board */
-placeInTable = (y, x) => {
-  // make a div and insert into correct table cell
-  const piece = document.createElement('div');
-  piece.classList.add('piece');
-  piece.classList.add(`p${currPlayer}`);
-  // piece.style.top = -50 * (y + 2);
-
-  // SET PLAYER COLORS FROM COLOR SELECTION FORM
-  if (currPlayer === 1) {
-    let p1Color = document.getElementById('p1-color');
-    piece.style.backgroundColor = p1Color.value; //sets selected color as .piece bg color
-  } else {
-    let p2Color = document.getElementById('p2-color');
-    piece.style.backgroundColor = p2Color.value;
+  /** findSpotForCol: given column x, return top empty y (null if filled) */
+  findSpotForCol(x) {
+    for (let y = this.HEIGHT - 1; y >= 0; y--) {
+      if (this.board[y][x] == null) {
+        return y;
+      }
+    }
+    return null;
   }
 
-  const spot = document.getElementById(`${y}-${x}`);
-  spot.append(piece);
-};
+  /** placeInTable: update DOM to place piece into HTML table of board */
+  placeInTable(y, x) {
+    // make a div and insert into correct table cell
+    const piece = document.createElement('div');
+    piece.classList.add('piece');
 
-/** endGame: announce game end */
-endGame = msg => {
-  // pop up alert message
-  setTimeout(() => {
-    alert(msg);
-  }, 400);
+    // SET PLAYER COLORS FROM COLOR SELECTION FORM
+    piece.style.backgroundColor = this.currPlayer.color; //sets selected color as .piece bg color
 
-  // changes Reset Game button to Play Again
-  document.getElementById('restartGame').innerText = 'Play Again!';
-  document.getElementById('restartGame').style.fontSize = '50px';
-
-  // won't let anyone keep dropping .piece
-  const top = document.getElementById('column-top');
-  top.removeEventListener('click', handleClick);
-};
-
-/** handleClick: handle click of column top to play piece */
-handleClick = e => {
-  // get x from ID of clicked cell
-  const x = +e.target.id;
-
-  // get next spot in column (if none, ignore click)
-  const y = findSpotForCol(x);
-  if (y === null) {
-    return;
+    const spot = document.getElementById(`${y}-${x}`);
+    spot.append(piece);
   }
 
-  // place piece in board and add to HTML table
-  board[y][x] = currPlayer; // match cell to player
-  placeInTable(y, x);
+  /** endGame: announce game end */
+  endGame(msg) {
+    // pop up alert message
+    setTimeout(() => alert(msg), 400);
 
-  // CHECK FOR WIN
-  if (checkForWin()) {
-    endGame(`Player ${currPlayer} is the winner! 🎉`);
-    // arrow changes to trophy for winner
-    document.getElementById('whose-turn').innerHTML = '🏆';
-    document.getElementById('whose-turn').style.color = p1Color.value;
+    // won't let anyone keep dropping .piece
+    const top = document.getElementById('column-top');
+    top.removeEventListener('click', this.handleDropPiece);
+
+    // changes Reset Game button to Play Again
+    document.getElementById('restartGame').innerText = 'Play Again!';
+    document.getElementById('restartGame').style.fontSize = '50px';
   }
 
-  // CHECK FOR TIE
-  // if no cells are null, call endGame
-  // checks top row to see if any are not null
-  if (board[0].every(val => val !== null)) {
-    endGame(`It's a Tie! 🙀`);
-    document.getElementById('whose-turn').innerHTML = ' '; // no one gets a trophy
+  /** handleClick: handle click of column top to play piece */
+  handleClick(e) {
+    // get x from ID of clicked cell
+    const x = +e.target.id;
+
+    // get next spot in column (if none, ignore click)
+    const y = this.findSpotForCol(x);
+    if (y === null) {
+      return;
+    }
+
+    // place piece in board and add to HTML table
+    this.board[y][x] = this.currPlayer; // match cell to player
+    this.placeInTable(y, x);
+
+    // CHECK FOR WIN
+    if (this.checkForWin()) {
+      const arrow = document.getElementById('whose-turn');
+
+      if (this.currPlayer === this.players[0]) {
+        this.endGame(`Player 1 is the winner! 🎉`);
+        document.getElementById('whose-turn').innerHTML = '🏆'; // arrow changes to trophy for winner
+        return (arrow.style.textAlign = 'left');
+      } else {
+        this.endGame(`Player 2 is the winner! 🎉`);
+        document.getElementById('whose-turn').innerHTML = '🏆';
+        return (arrow.style.textAlign = 'right');
+      }
+    }
+
+    // CHECK FOR TIE
+    // if no cells are null, call endGame
+    // checks top row to see if any are not null
+    if (this.board[0].every(cell => cell !== null)) {
+      this.endGame(`It's a Tie! 🙀`);
+      document.getElementById('whose-turn').innerHTML = ' '; // no one gets a trophy
+    }
+
+    // SWITCH PLAYERS
+    this.currPlayer =
+      this.currPlayer === this.players[0] ? this.players[1] : this.players[0];
+    // currPlayer = currPlayer === 1 ? 2 : 1;
+    this.switchPlayer();
   }
 
-  // SWITCH PLAYERS
-  currPlayer = currPlayer === 1 ? 2 : 1;
-  switchPlayer();
-};
+  // INDICATE WHOSE TURN IT IS ^
+  switchPlayer() {
+    const arrow = document.getElementById('whose-turn');
 
-/** checkForWin: check board cell-by-cell for "does a win start here?" */
-checkForWin = () => {
-  function _win(cells) {
-    // Check four cells to see if they're all color of current player
-    return cells.every(
-      ([y, x]) =>
-        y >= 0 &&
-        y < HEIGHT &&
-        x >= 0 &&
-        x < WIDTH &&
-        board[y][x] === currPlayer
-    );
+    if (this.currPlayer === this.players[0]) {
+      arrow.style.textAlign = 'left';
+      arrow.style.color = document.getElementById('p1-color').value;
+    } else {
+      arrow.style.textAlign = 'right';
+      arrow.style.color = document.getElementById('p2-color').value;
+    }
   }
+  /** checkForWin: check board cell-by-cell for "does a win start here?" */
+  checkForWin() {
+    // Checks four cells to see if they're all color of current player
+    const _win = cells =>
+      cells.every(
+        ([y, x]) =>
+          y >= 0 &&
+          y < this.HEIGHT &&
+          x >= 0 &&
+          x < this.WIDTH &&
+          this.board[y][x] === this.currPlayer
+      );
 
-  // calculates win possibilities
-  //  - cells: list of four (y, x) cells
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      let horiz = [
-        [y, x],
-        [y, x + 1],
-        [y, x + 2],
-        [y, x + 3]
-      ];
-      let vert = [
-        [y, x],
-        [y + 1, x],
-        [y + 2, x],
-        [y + 3, x]
-      ];
-      let diagDR = [
-        [y, x],
-        [y + 1, x + 1],
-        [y + 2, x + 2],
-        [y + 3, x + 3]
-      ];
-      let diagDL = [
-        [y, x],
-        [y + 1, x - 1],
-        [y + 2, x - 2],
-        [y + 3, x - 3]
-      ];
+    // calculates win possibilities
+    //  - cells: list of four (y, x) cells
+    for (let y = 0; y < this.HEIGHT; y++) {
+      for (let x = 0; x < this.WIDTH; x++) {
+        let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
+        let vert = [[y, x], [y + 1, x],  [y + 2, x], [y + 3, x]];
+        let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
+        let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]
+        ];
 
-      //  - returns true if all are legal coordinates & all match currPlayer
-      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-        return true;
+        //  - returns true if all are legal coordinates & all match currPlayer
+        if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+          return true;
+        }
       }
     }
   }
-};
+}
+
+class Player {
+  constructor(color) {
+    this.color = color;
+  }
+}
 
 /*EXTRA*/
+
+//START GAME ON BUTTON CLICK
+const form = document.getElementById('pick-color');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  viewPlayers();
+  form.style.display = 'none';
+  restartBtn.style.display = 'inline';
+  let p1 = new Player(document.getElementById('p1-color').value);
+  let p2 = new Player(document.getElementById('p2-color').value);
+  new Game(p1, p2);
+});
+
+// RESTART GAME BUTTON
+const restartBtn = document.getElementById('restartGame');
+restartBtn.addEventListener('click', () => {
+  location.reload();
+});
 
 //SHOW PLAYER NAMES AND COLORS
 viewPlayers = () => {
@@ -196,63 +217,19 @@ viewPlayers = () => {
   const players = document.getElementById('players');
   const p1 = document.createElement('p');
   const p2 = document.createElement('p');
-  players.append(p1, p2);
   p1.textContent = 'Player 1';
   p2.textContent = 'Player 2';
+  players.append(p1, p2);
 
   // match player to color they picked
-  const p1Color = document.getElementById('p1-color');
-  p1.style.color = p1Color.value;
-  const p2Color = document.getElementById('p2-color');
-  p2.style.color = p2Color.value;
+  p1.style.color = document.getElementById('p1-color').value;
+  p2.style.color = document.getElementById('p2-color').value;
 
   // add ^ arrow to indicate whose turn
   const turn = document.getElementById('whose-turn');
-  const arrow = document.createElement('span');
-  turn.append(arrow);
-  arrow.innerText = '^';
+  turn.style.color = document.getElementById('p1-color').value;
+  turn.innerText = '^';
 };
-
-// INDICATE WHOSE TURN IT IS ^
-switchPlayer = () => {
-  const arrow = document.getElementById('whose-turn');
-  const p1Color = document.getElementById('p1-color');
-  const p2Color = document.getElementById('p2-color');
-
-  if (currPlayer === 1) {
-    arrow.style.textAlign = 'left';
-    arrow.style.color = p1Color.value;
-  } else {
-    arrow.style.textAlign = 'right';
-    arrow.style.color = p2Color.value;
-  }
-};
-
-//START GAME ON BUTTON CLICK
-const form = document.getElementById('pick-color');
-form.addEventListener('submit', startGame);
-
-function startGame(e) {
-  e.preventDefault();
-  viewPlayers();
-  makeBoard();
-  makeHtmlBoard();
-  form.style.display = 'none';
-  restartBtn.style.display = 'inline';
-}
-
-// RESTART GAME BUTTON
-const restartBtn = document.getElementById('restartGame');
-restartBtn.addEventListener('click', restartGame);
-
-function restartGame() {
-  location.reload();
-  // const board = document.getElementById('board');
-  // board.innerHTML = '';
-  // makeBoard();
-  // makeHtmlBoard();
-  // restartBtn.removeEventListener('click', restartGame);
-}
 
 //ANIMATE TEXT
 randomRGB = () => {
